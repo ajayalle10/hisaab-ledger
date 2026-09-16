@@ -1,0 +1,17 @@
+{
+  "name": "Hisaab — Ledger",
+  "short_name": "Hisaab",
+  "description": "Every rupee, in its place.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#EAE5D4",
+  "theme_color": "#EAE5D4",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
