@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { Fragment, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useData } from '../data/DataContext';
 import { BackBar } from '../components/BackBar';
@@ -20,6 +20,7 @@ export function LoanDetail() {
   const { loans, payments, getPerson, updateLoanStatus } = useData();
   const navigate = useNavigate();
   const [statusBusy, setStatusBusy] = useState(false);
+  const [expandedPaymentId, setExpandedPaymentId] = useState<string | null>(null);
 
   const loan = loans.find((l) => l.id === loanId);
   if (!loan) return <div className="screen">Loan not found.</div>;
@@ -69,17 +70,42 @@ export function LoanDetail() {
           PAYMENT HISTORY <span className="count">{history.length}</span>
         </div>
         <Rows empty="No payments logged yet.">
-          {history.map((p) => (
-            <div className="row static" key={p.id}>
-              <div className="left">
-                <div className="name">{paymentLabel(p.principalPortion, p.interestPortion)}</div>
-                <div className="meta">
-                  {formatDate(p.date)} · {p.paymentMode}
-                </div>
-              </div>
-              <div className="amt neutral">{formatINR(p.totalAmount)}</div>
-            </div>
-          ))}
+          {history.map((p) => {
+            const open = expandedPaymentId === p.id;
+            return (
+              <Fragment key={p.id}>
+                <button className="row" onClick={() => setExpandedPaymentId(open ? null : p.id)}>
+                  <div className="left">
+                    <div className="name">{paymentLabel(p.principalPortion, p.interestPortion)}</div>
+                    <div className="meta">
+                      {formatDate(p.date)} · {p.paymentMode}
+                    </div>
+                  </div>
+                  <div className="amt neutral">
+                    {formatINR(p.totalAmount)} <span className="chev">{open ? '▴' : '▾'}</span>
+                  </div>
+                </button>
+                {open && (
+                  <div className="pay-breakdown">
+                    <div className="kf-row">
+                      <span className="k">Principal</span>
+                      <span className="v">{formatINR(p.principalPortion)}</span>
+                    </div>
+                    <div className="kf-row">
+                      <span className="k">Interest</span>
+                      <span className="v" style={{ color: 'var(--green)' }}>{formatINR(p.interestPortion)}</span>
+                    </div>
+                    {p.notes && (
+                      <div className="kf-row">
+                        <span className="k">Note</span>
+                        <span className="v note">{p.notes}</span>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </Fragment>
+            );
+          })}
         </Rows>
       </section>
       <div className="actions">

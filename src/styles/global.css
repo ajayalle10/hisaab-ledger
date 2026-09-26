@@ -302,6 +302,26 @@ section {
   stroke: var(--maroon);
 }
 
+/* tap-to-expand split under a payment-history row */
+.row .amt .chev {
+  font-size: 0.7rem;
+  color: var(--ink-soft);
+  margin-left: 4px;
+}
+.pay-breakdown {
+  padding: 2px 0 2px 16px;
+  border-bottom: 1px solid var(--rule);
+  background: var(--paper-raised);
+}
+.pay-breakdown .kf-row {
+  padding: 8px 12px 8px 0;
+  font-size: 0.82rem;
+}
+.pay-breakdown .kf-row .v.note {
+  font-family: var(--font-body);
+  max-width: 65%;
+}
+
 /* loan detail card */
 .keyfacts {
   border-top: 1px solid var(--rule);
@@ -583,4 +603,28 @@ section {
 ::-webkit-scrollbar {
   width: 0;
   height: 0;
+}
+
+/* log payment: helper line under an input, and the auto-summed total */
+.field-hint {
+  display: block;
+  margin-top: 5px;
+  font-size: 0.74rem;
+  color: var(--ink-soft);
+}
+.field-hint.link {
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: var(--font-body);
+  text-align: left;
+  color: var(--green);
+  text-decoration: underline;
+  cursor: pointer;
+}
+.total-row {
+  border-top: 1px solid var(--rule-strong);
+  border-bottom: 1px solid var(--rule-strong) !important;
+  margin-bottom: 16px;
+  font-weight: 600;
 }

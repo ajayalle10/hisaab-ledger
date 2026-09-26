@@ -122,17 +122,25 @@ export function watchlist(loans: Loan[], today = todayISO()): Loan[] {
   return loans.filter((l) => isOverdue(l, today));
 }
 
-export function homeTotals(loans: Loan[], payments: Payment[]) {
-  let givenOutstanding = 0;
-  let takenOutstanding = 0;
-  const people = new Set<string>();
-  for (const loan of loans) {
-    people.add(loan.personId);
-    const outstanding = outstandingPrincipal(loan, payments);
-    if (loan.direction === 'given') givenOutstanding += outstanding;
-    else takenOutstanding += outstanding;
+// Money in and new lending for a period. `periodPrefix` is "YYYY-MM" for a month
+// or "YYYY" for a year — matched against ISO dates with startsWith. Only loans
+// given out count: payments on loans taken are money going out, not received.
+export function periodLoanStats(loans: Loan[], payments: Payment[], periodPrefix: string) {
+  const givenLoanIds = new Set(loans.filter((l) => l.direction === 'given').map((l) => l.id));
+  let interestReceived = 0;
+  let principalReceived = 0;
+  for (const p of payments) {
+    if (!givenLoanIds.has(p.loanId) || !p.date.startsWith(periodPrefix)) continue;
+    interestReceived += p.interestPortion;
+    principalReceived += p.principalPortion;
   }
-  return { givenOutstanding, takenOutstanding, peopleCount: people.size };
+  const newLoans = loans.filter((l) => l.direction === 'given' && l.dateGiven.startsWith(periodPrefix));
+  return {
+    interestReceived,
+    principalReceived,
+    newLoanCount: newLoans.length,
+    newLoanAmount: newLoans.reduce((sum, l) => sum + l.principal, 0),
+  };
 }
 
 export function dayTransactions(transactions: Transaction[], iso: string): Transaction[] {

@@ -6,7 +6,7 @@ import { SegmentedControl } from '../components/SegmentedControl';
 import { SummaryStrip } from '../components/SummaryStrip';
 import { TxnRow } from '../components/TxnRow';
 import { dayTransactions, monthTransactions, periodTotals, yearMonthBreakdown } from '../lib/derive';
-import { formatINR, todayISO } from '../lib/format';
+import { addDays, addMonths, formatINR, todayISO } from '../lib/format';
 
 type Period = 'day' | 'month' | 'year';
 
@@ -27,21 +27,15 @@ export function Book() {
   const [year, month] = currentDate.split('-').map(Number);
 
   function shiftDay(delta: number) {
-    const d = new Date(currentDate + 'T00:00:00');
-    d.setDate(d.getDate() + delta);
-    setCurrentDate(d.toISOString().slice(0, 10));
+    setCurrentDate(addDays(currentDate, delta));
   }
 
   function shiftMonth(delta: number) {
-    const d = new Date(currentDate + 'T00:00:00');
-    d.setMonth(d.getMonth() + delta);
-    setCurrentDate(d.toISOString().slice(0, 10));
+    setCurrentDate(addMonths(currentDate, delta));
   }
 
   function shiftYear(delta: number) {
-    const d = new Date(currentDate + 'T00:00:00');
-    d.setFullYear(d.getFullYear() + delta);
-    setCurrentDate(d.toISOString().slice(0, 10));
+    setCurrentDate(addMonths(currentDate, delta * 12));
   }
 
   const dayLabel = useMemo(() => {

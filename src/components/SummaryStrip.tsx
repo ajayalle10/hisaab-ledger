@@ -2,6 +2,7 @@ export interface SummaryCell {
   num: string;
   lbl: string;
   color?: string;
+  sub?: string; // optional small line under the label, e.g. an amount beside a count
 }
 
 export function SummaryStrip({ cells }: { cells: SummaryCell[] }) {
@@ -13,6 +14,7 @@ export function SummaryStrip({ cells }: { cells: SummaryCell[] }) {
             {c.num}
           </div>
           <div className="lbl">{c.lbl}</div>
+          {c.sub && <div className="lbl">{c.sub}</div>}
         </div>
       ))}
     </div>

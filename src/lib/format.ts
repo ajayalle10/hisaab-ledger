@@ -31,14 +31,32 @@ export function formatDateUpper(iso: string): string {
   return formatDate(iso).toUpperCase();
 }
 
-export function todayISO(): string {
-  return new Date().toISOString().slice(0, 10);
+// "YYYY-MM-DD" in the phone's own time zone. Never use toISOString() for this:
+// it converts to UTC, which in India (UTC+5:30) is still "yesterday" until 5:30 AM.
+export function toLocalISO(d: Date): string {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
 }
 
-export function addMonths(iso: string, months: number): string {
+export function todayISO(): string {
+  return toLocalISO(new Date());
+}
+
+export function addDays(iso: string, days: number): string {
   const d = new Date(iso + 'T00:00:00');
-  d.setMonth(d.getMonth() + months);
-  return d.toISOString().slice(0, 10);
+  d.setDate(d.getDate() + days);
+  return toLocalISO(d);
+}
+
+// Clamps to the target month's last day, so 31 Jan + 1 month = 28/29 Feb, not 3 Mar.
+export function addMonths(iso: string, months: number): string {
+  const [y, m, day] = iso.split('-').map(Number);
+  const target = new Date(y, m - 1 + months, 1);
+  const daysInTarget = new Date(target.getFullYear(), target.getMonth() + 1, 0).getDate();
+  target.setDate(Math.min(day, daysInTarget));
+  return toLocalISO(target);
 }
 
 export function daysBetween(fromISO: string, toISO: string): number {
